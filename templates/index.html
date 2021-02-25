@@ -1,0 +1,232 @@
+<!doctype html>
+{% extends 'base.html' %}
+
+{% block title%}<title>Chat</title>{%endblock%}
+
+{% block styles %}
+	<style type="text/css">
+		body {
+			background: url(../static/fon.jpg);
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+	<div class="container-fluid fixed-top" id="head">
+		<div class="row">
+			<div class="col-4 d-flex justify-content-start align-items-center">
+				{%raw%}
+				<div class="btn-group dropright">
+					<button type="button" class="btn btn-secondary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="btnUsers">Online:</button>
+					<div class="dropdown-menu">
+						<p class="users" v-for="(user, index) in userList" :key="index">{{ user }}</p>
+					</div>
+				</div>
+				{%endraw%}
+			</div>
+			<div class="col-4">
+
+			</div>
+			<div class="col-4 d-flex justify-content-end mt-4">
+				<h1 id="username">{{ user }}</h1>
+				{%raw%}
+				<div>{{ ping }}</div>
+			</div>
+			
+		</div>
+	</div>
+	<div class="container-lg">
+		<div id="messUp"></div>
+		<div class="row">
+			<div class="col">
+				
+				<div v-for="(message, index) in messages" :key="index">
+					<div v-if="message[1] === userName">
+						<div class="d-flex justify-content-end mt-4">
+							<div class="alert" role="alert" id="messBlock">
+								<h2 class="messText" id="messageHeader">{{ message[0] }} {{ message[1] }}</h2>
+								<h2 class="messText" id="messageText">{{ message[2] }}</h2>
+								<img :src="message[3]" alt="">
+							</div>
+						</div>
+					</div>
+					
+					<div v-else>
+						<div class="d-flex justify-content-start mt-4">
+							<div class="alert" role="alert" id="messBlock">
+								<h2 class="messText" id="messageHeader">{{ message[0] }} {{ message[1] }}</h2>
+								<h2 class="messText" id="messageText">{{ message[2] }}</h2>
+								<img :src="message[3]" alt="">
+							</div>
+						</div>
+					</div>
+				</div>
+				{%endraw%}
+			</div>
+		</div>
+		<div id="messDown"></div>
+	</div>
+{% endblock%}
+
+{% block footer%}
+	<footer>
+		<div class="container-fluid fixed-bottom" id="footer-contant">
+			<form class="mt-4" @submit.prevent ="newPost">
+				<div class="form-group">
+					<div class="input-group input-group-lg">
+						<textarea v-model="valueMessage" type="text" class="form-control" rows='1' id="textArea" 
+						    			maxlength='500' wrap="hard" cols="10" placeholder="Сообщение"></textarea>
+						<div class="input-group-prepend">
+							<button @click="goToLocation" :disabled="isButtonDisabled" type="submit" class="btn btn-secondary" id="subMessBtn">Отправить</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</footer>
+{% endblock%}
+
+{% block script %}
+	<script src="../static/vue.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+	<script>
+		new Vue({
+			el: '#app',
+			data: {
+				messages: [],
+				userList: [],
+				valueMessage: '',
+				userName: '',
+				isButtonDisabled: true,
+				connection: null,
+				myRe: /\w+\.(jpg|png|jpeg|gif)/,
+			},
+
+			mounted() {
+				//"""Получение имени юзера из контекста HTML"""
+            	this.userName = document.getElementById('username').textContent
+        		
+				const self = this
+
+				console.log("Starting connection to WebSocket Server")
+
+				this.connection = new WebSocket(`ws://{{your address}}/ws/${this.userName}`)
+
+				this.connection.onopen = function(event) {
+					console.log("Successfully connected to the Messages websocket server...")
+				}
+
+				this.connection.onmessage = function(event) {
+					const time = new Date().toLocaleTimeString()
+					const context = event.data.split(':::')
+
+					if(context[1] == "--UserAddToChat") {
+						self.userList.push(context[0])
+						context.unshift(time)
+						context[1] += " ONline"
+						context[2] = null
+						context[3] = null
+						self.messages.push(context)
+						self.echo()
+						self.goToLocation()
+
+					} else if(self.myRe.test(context[1])) {
+						context.unshift(time)
+						context[3] = context[2]
+						context[2] = null
+						self.messages.push(context)
+						self.goToLocation()
+
+					} else if(context[1] == "--Ping") {
+						console.log('Ping')
+
+					} else if(context[2] == "--UserEchoToChat") {
+						self.userList.push(context[0])
+						self.userList = [...new Set(self.userList)]
+
+					} else if(context[1] == "--UserLeftToChat") {
+						const user = self.userList.indexOf(context[0])
+						self.userList.splice(user, 1)
+						context[1] = null
+						context.unshift(time)
+						context[1] += " OFFline"
+						context[3] = null
+						self.messages.push(context)
+						self.goToLocation()
+						
+					} else if(context[2] == "--Message") {
+						context.unshift(time)
+						context[3] = null
+						self.messages.push(context)
+						self.goToLocation()
+					}
+
+				}
+
+				this.connection.onerror = function(event) {
+					const time = new Date().toLocaleTimeString()
+					self.messages.push([`${time} Ошибка соединения`])
+					self.goToLocation()
+				}
+
+				this.connection.onclose = function(event) {
+					const time = new Date().toLocaleTimeString()
+					if (event.wasClean) {
+						self.messages.push([`${time} Соединение закрыто`])
+					} else {
+						self.messages.push([`${time} Обрыв соединения`])
+					}
+					self.goToLocation()
+				}
+
+
+
+			},
+
+			methods: {
+				// """Сообщение всем, что устройство в сети.
+				///Срабатывает в ответ на подключение нового пользователя"""
+				echo() {
+					this.connection.send(`${this.userName}:::--UserEchoToChat`)
+				},
+
+
+				// """Отправка на сервер текста из поля ввода"""
+				newPost(event){
+					this.connection.send(`${this.valueMessage}:::--Message`)
+					this.valueMessage = ''
+					event.preventDefault()
+				},
+
+				// """Переход к определённому элементу на странице"""
+				goToLocation() {
+					window.location = '#messDown'
+				},
+
+			},
+
+			watch: {
+				// """Устанавливает зависимость переменной isButtonDisabled от переменной valueMessage"""
+				valueMessage() {
+					if( this.valueMessage.length > 0){
+						this.isButtonDisabled = false 
+					}
+					else {
+						this.isButtonDisabled = true
+					}
+				}
+
+			},
+
+			computed: {
+				//"""Периодическая отправка сигнала для поддержания соединения с сервером"""
+				ping() {
+					setInterval(() => this.connection.send("--Ping"), 40000)
+				}
+			}
+		})
+
+	</script>
+
+{% endblock%}

@@ -1,0 +1,152 @@
+* {
+	font-family: 'Alice', serif;
+}
+
+/*"""first.html"""*/
+#titleLable h1 {
+	font-size: 150px;
+	position: relative;
+	color: black;
+	-webkit-text-stroke: .04em black;
+}
+@media (max-width: 1500px) {
+	#titleLable h1 {
+		font-size: 200px;
+		position: relative;
+		color: black;
+		-webkit-text-stroke: .04em black;
+	}
+}
+#titleLable h1::before { /* второй слой */
+	content: attr(data-text);
+	position: absolute; /* в том же месте той же ширины */
+	left: 0;
+	right: 0;
+	-webkit-text-stroke: .02em gold;
+}
+#forma {
+	margin-top: 10%;
+}
+@media (max-width: 1500px) {
+	#forma {
+	margin-top: 40%;
+	}
+}
+#inputName {
+	margin-top: 30%;
+}
+#lableName {
+	font-size: 30px;
+	box-shadow: 0 0 20px 10px black;
+}
+@media (max-width: 1500px) {
+	#lableName {
+		font-size: 50px;
+		box-shadow: 0 0 20px 10px black;
+	}
+}
+#submitButton {
+	margin-top: 10%;
+}
+.err {
+	color: red;
+	text-shadow: 1px 1px 2px black, 0 0 1em red;
+}
+
+
+/*"""index.html"""*/
+#head {
+	background: url(../static/fon.jpg);
+}
+#username {
+	color: white;
+	margin: 0px 20px 0px 0px;
+}
+.users {
+	font-size: 20px;
+	margin: 20px 20px 20px 20px;
+}
+@media (max-width: 1500px) {
+	.users {
+		font-size: 40px;
+		margin: 20px 20px 20px 20px;
+	}
+}
+#btnUsers {
+	border-radius: 30px;
+	margin: 10px 0px 10px 0px;
+	word-wrap:break-word;
+	border-radius: 30px;
+	box-shadow: 0 0 10px 5px black;
+}
+@media (max-width: 1500px) {
+	#btnUsers {
+		width: 200px;
+		font-size: 40px;
+		border-radius: 30px;
+	}
+}
+#messUp {
+	margin-bottom: 25%;
+}
+#messBlock {
+	word-wrap:break-word;
+	border-radius: 30px;
+	max-width: 80%;
+	box-shadow: 0 0 10px 5px black;
+	background-color: grey;
+}
+#messageText {
+	color: white;
+}
+#messageHeader {
+	color: orange;
+}
+img {
+	display: block;
+	max-width:720px;
+}
+@media (max-width: 1500px) {	
+	.messText {
+		font-size: 50px;
+	}
+}
+#messDown {
+	margin-bottom: 25%;
+}
+#subMessBtn {
+	word-wrap:break-word;
+	border-radius: 30px;
+	box-shadow: 0 0 10px 5px black;
+	margin: 0px 0px 0px 10px
+}
+@media (max-width: 1500px) {
+	#subMessBtn {
+		font-size: 40px;
+	}
+}
+#footer-contant {
+}
+#textArea {
+	background-color: grey;
+	color: white;
+	/*border: none;
+	-webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;*/
+    word-wrap:break-word;
+	border-radius: 30px;
+	box-shadow: 0 0 10px 5px black
+}
+
+@media (max-width: 1500px) {
+	#textArea {
+		font-size: 50px;
+		resize: none;
+	}
+}
+#textArea::placeholder {
+  color: white;  
+}
+
+

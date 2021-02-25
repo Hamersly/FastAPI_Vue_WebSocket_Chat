@@ -1,0 +1,39 @@
+<!doctype html>
+
+{% extends 'base.html' %}
+
+{% block title%}<title>Registration</title>{%endblock%}
+
+{% block styles %}
+	<style type="text/css">
+		body {
+			background: url(../static/lampa.jpg) fixed;
+			background-size: cover;
+		}
+	</style>
+{% endblock%}
+
+{% block content %}
+<div class="container">
+	<div class="row d-flex justify-content-center" id="forma" >
+		<div class="col-auto">
+			<div class="container text-center"  id="titleLable">
+				<h1 data-text="LAMP 2.0"><strong>Chat</strong></h1>
+				<div class="container" id="inputName">
+				    <form action="/chat/" method="post">
+				    	{%raw%}
+				            <input class="form-control form-control-lg" 
+				            		id="lableName"
+				            		name="name" 
+				            		type="text" 
+				            		placeholder='Имя (от 2 до 15 знаков):'
+				            		minlength=2
+				            		maxlength=15>
+				        {%endraw%}
+				    </form>
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock%}
