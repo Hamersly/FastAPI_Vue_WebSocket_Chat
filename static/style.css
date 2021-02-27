@@ -114,18 +114,37 @@ img {
 #messDown {
 	margin-bottom: 25%;
 }
-#subMessBtn {
+#footer-contant {
+	background: url(../static/fon.jpg);
+}
+#FileUp {
+	background-color: grey;
 	word-wrap:break-word;
 	border-radius: 30px;
 	box-shadow: 0 0 10px 5px black;
-	margin: 0px 0px 0px 10px
+	margin: 0px 10px 0px 10px
+}
+/*#formImg {
+	display: block;
+	width: 50px;
+	height: auto;
+	padding: 20px 0px 0px 0px
+}*/
+#imgBtn {
+	/*word-wrap:break-word;
+	border-radius: 30px;
+	box-shadow: 0 0 10px 5px black;
+	margin: 0px 10px 0px 0px*/
+	color: white;
+	width: 35px;
+	height: auto;
+	padding-top: 15px;
 }
 @media (max-width: 1500px) {
-	#subMessBtn {
-		font-size: 40px;
+	#imgBtn {
+		width: 60px;
+		height: auto;
 	}
-}
-#footer-contant {
 }
 #textArea {
 	background-color: grey;
@@ -147,6 +166,17 @@ img {
 }
 #textArea::placeholder {
   color: white;  
+}
+#subMessBtn {
+	word-wrap:break-word;
+	border-radius: 30px;
+	box-shadow: 0 0 10px 5px black;
+	margin: 0px 0px 0px 10px
+}
+@media (max-width: 1500px) {
+	#subMessBtn {
+		font-size: 40px;
+	}
 }
 
 

@@ -71,17 +71,30 @@
 {% block footer%}
 	<footer>
 		<div class="container-fluid fixed-bottom" id="footer-contant">
-			<form class="mt-4" @submit.prevent ="newPost">
-				<div class="form-group">
-					<div class="input-group input-group-lg">
-						<textarea v-model="valueMessage" type="text" class="form-control" rows='1' id="textArea" 
-						    			maxlength='500' wrap="hard" cols="10" placeholder="Сообщение"></textarea>
-						<div class="input-group-prepend">
-							<button @click="goToLocation" :disabled="isButtonDisabled" type="submit" class="btn btn-secondary" id="subMessBtn">Отправить</button>
-						</div>
-					</div>
+			<div class="row">
+				<div class="col-md-auto align-self-center">
+						<input class="form-control" type="file" id="formFile" style="display:none" accept=".jpg, .jpeg, .png, .gif" ref="file" v-on:change="handleFileUpload()">
+						<label for="formFile">
+							<svg xmlns="http://www.w3.org/2000/svg" id="imgBtn" fill="currentColor" class="bi bi-file-image" viewBox="0 0 16 16">
+								<path d="M8.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+								<path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v8l-2.083-2.083a.5.5 0 0 0-.76.063L8 11 5.835 9.7a.5.5 0 0 0-.611.076L3 12V2z"/>
+							</svg>
+						</label>
 				</div>
-			</form>
+				<div class="col">
+					<form class="mt-4" @submit.prevent ="newPost">
+						<div class="form-group">
+							<div class="input-group input-group-lg">
+								<textarea v-model="valueMessage" type="text" class="form-control" rows='1' id="textArea" 
+								    		 wrap="hard" cols="10" placeholder="Сообщение"></textarea>
+								<div class="input-group-prepend">
+									<button @click="goToLocation" :disabled="isButtonDisabled" type="submit" class="btn btn-secondary" id="subMessBtn">Отправить</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
 		</div>
 	</footer>
 {% endblock%}
@@ -101,6 +114,8 @@
 				isButtonDisabled: true,
 				connection: null,
 				myRe: /\w+\.(jpg|png|jpeg|gif)/,
+				myRe64: /data:image/,
+				valueImage: '',
 			},
 
 			mounted() {
@@ -111,7 +126,7 @@
 
 				console.log("Starting connection to WebSocket Server")
 
-				this.connection = new WebSocket(`ws://{{your address}}/ws/${this.userName}`)
+				this.connection = new WebSocket(`ws://192.168.1.3:8000/ws/${this.userName}`)
 
 				this.connection.onopen = function(event) {
 					console.log("Successfully connected to the Messages websocket server...")
@@ -131,7 +146,7 @@
 						self.echo()
 						self.goToLocation()
 
-					} else if(self.myRe.test(context[1])) {
+					} else if(self.myRe.test(context[1]) || self.myRe64.test(context[1])) {
 						context.unshift(time)
 						context[3] = context[2]
 						context[2] = null
@@ -139,7 +154,6 @@
 						self.goToLocation()
 
 					} else if(context[1] == "--Ping") {
-						console.log('Ping')
 
 					} else if(context[2] == "--UserEchoToChat") {
 						self.userList.push(context[0])
@@ -204,6 +218,41 @@
 					window.location = '#messDown'
 				},
 
+				//"""Загрузка и отправка изображения в чат c устройства"""
+				async handleFileUpload() {
+					const file = this.$refs.file.files[0]
+					const img = new Image()
+
+					function getBase64(file, onLoadCallback) {
+						return new Promise(function (resolve, reject) {
+							const reader = new FileReader()
+							reader.readAsDataURL(file)
+							reader.onload = () => {
+								resolve(reader.result)
+							}
+							reader.onerror = reject
+						})
+					}
+
+					fileData = await getBase64(file).catch(err => {console.log(err)})
+
+					img.src = fileData
+					img.onload = () => {
+						const canvas = document.createElement('canvas')
+						if(img.width > img.height) {
+							width = 600
+						}else{
+							width = 400
+						}
+						const scaleFactor = width / img.width
+						canvas.width = width
+						canvas.height = img.height * scaleFactor
+						const ctx = canvas.getContext('2d')
+						ctx.drawImage(img, 0, 0, width, img.height * scaleFactor)
+						const data = ctx.canvas.toDataURL(img, 'image/png', 0.7)
+						this.connection.send(`${data}:::--Message`)
+					}
+				},
 			},
 
 			watch: {
@@ -215,7 +264,7 @@
 					else {
 						this.isButtonDisabled = true
 					}
-				}
+				},
 
 			},
 
