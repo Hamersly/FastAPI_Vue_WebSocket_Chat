@@ -115,7 +115,8 @@ img {
 	margin-bottom: 25%;
 }
 #footer-contant {
-	background: url(../static/fon.jpg);
+	/*background: url(../static/fon.jpg);*/
+	background-color: grey;
 }
 #FileUp {
 	background-color: grey;
@@ -149,13 +150,13 @@ img {
 #textArea {
 	background-color: grey;
 	color: white;
-	/*border: none;
+	border: none;
 	-webkit-box-shadow: none;
     -moz-box-shadow: none;
-    box-shadow: none;*/
-    word-wrap:break-word;
+    box-shadow: none;
+    /*word-wrap:break-word;
 	border-radius: 30px;
-	box-shadow: 0 0 10px 5px black
+	box-shadow: 0 0 10px 5px black*/
 }
 
 @media (max-width: 1500px) {
