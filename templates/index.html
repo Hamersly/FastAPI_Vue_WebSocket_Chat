@@ -144,14 +144,12 @@
 						context[3] = null
 						self.messages.push(context)
 						self.echo()
-						self.goToLocation()
 
 					} else if(self.myRe.test(context[1]) || self.myRe64.test(context[1])) {
 						context.unshift(time)
 						context[3] = context[2]
 						context[2] = null
 						self.messages.push(context)
-						self.goToLocation()
 
 					} else if(context[1] == "--Ping") {
 
@@ -167,7 +165,6 @@
 						context[1] += " OFFline"
 						context[3] = null
 						self.messages.push(context)
-						self.goToLocation()
 						
 					} else if(context[2] == "--Message") {
 						context.unshift(time)
@@ -183,7 +180,6 @@
 				this.connection.onerror = function(event) {
 					const time = new Date().toLocaleTimeString()
 					self.messages.push([`${time} Ошибка соединения`])
-					self.goToLocation()
 				}
 
 				this.connection.onclose = function(event) {
@@ -193,7 +189,6 @@
 					} else {
 						self.messages.push([`${time} Обрыв соединения`])
 					}
-					self.goToLocation()
 				}
 
 
