@@ -150,6 +150,9 @@
 						context[3] = context[2]
 						context[2] = null
 						self.messages.push(context)
+						if(context[1] === self.userName) {
+							self.goToLocation()
+						}
 
 					} else if(context[1] == "--Ping") {
 
