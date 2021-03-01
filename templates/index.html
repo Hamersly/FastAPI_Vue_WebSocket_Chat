@@ -126,7 +126,7 @@
 
 				console.log("Starting connection to WebSocket Server")
 
-				this.connection = new WebSocket(`ws://fastapi-lamp-chat.herokuapp.com/ws/${this.userName}`)
+				this.connection = new WebSocket(`wss://fastapi-lamp-chat.herokuapp.com/ws/${this.userName}`)
 
 				this.connection.onopen = function(event) {
 					console.log("Successfully connected to the Messages websocket server...")
