@@ -1,6 +1,9 @@
 * {
 	font-family: 'Alice', serif;
 }
+[v-cloak] {
+	display: none;
+}
 
 /*"""first.html"""*/
 #titleLable h1 {
